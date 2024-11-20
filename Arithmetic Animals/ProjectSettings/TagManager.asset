@@ -2,16 +2,17 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Animal
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background
   - Water
   - UI
-  - 
+  - Characters
   - 
   - 
   - 
@@ -41,3 +42,11 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 2260605849
+    locked: 0
+  - name: Characters
+    uniqueID: 1777552921
+    locked: 0
+  m_RenderingLayers:
+  - Default
