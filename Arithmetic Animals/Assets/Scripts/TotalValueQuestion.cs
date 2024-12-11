@@ -20,14 +20,22 @@ public class TotalValueQuestion : MonoBehaviour
         // Set up button listener
         submitButton.onClick.AddListener(SubmitAnswer);
     }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q)) // Press 'Q' to test
+        {
+            ShowQuestion();
+        }
+    }
+
 
     public void ShowQuestion()
     {
+        // Ensure the panel is activated
+        questionPanel.SetActive(true);
+
         // Get the correct answer (total value of all animals)
         correctAnswer = gameManager.GetInitialTotal();  // Use the initial total of animals
-
-        // Display the question UI
-        questionPanel.SetActive(true);
 
         // Set the question text
         questionText.text = "What is the total value of all the animals?";
@@ -35,6 +43,7 @@ public class TotalValueQuestion : MonoBehaviour
         // Clear the input field
         answerInput.text = "";
     }
+
 
     public void SubmitAnswer()
     {

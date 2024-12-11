@@ -17,7 +17,10 @@ public class CountDownManager : MonoBehaviour
     {
         // Initialize currentTime with countdownTime
         currentTime = countdownTime;
-        countdownText.text = string.Format("{0:00}:{1:00}", Mathf.FloorToInt(currentTime / 60), Mathf.FloorToInt(currentTime % 60));
+        UpdateCountdownText();
+
+        // Optionally start the countdown automatically
+        StartCountdown(); // Comment this out if you want to start it manually
     }
 
     // Update is called once per frame
@@ -33,9 +36,15 @@ public class CountDownManager : MonoBehaviour
                 countdownActive = false;  // Stop the countdown
                 TriggerTotalValueQuestion();  // Trigger the Total Value Question
             }
-        }
 
-        // Update the countdown display in the format MM:SS
+            UpdateCountdownText();  // Update the displayed countdown text
+        }
+    }
+
+
+    // Updates the countdown display in the format MM:SS
+    private void UpdateCountdownText()
+    {
         int minutes = Mathf.FloorToInt(currentTime / 60);
         int seconds = Mathf.FloorToInt(currentTime % 60);
         countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
@@ -51,9 +60,16 @@ public class CountDownManager : MonoBehaviour
     // Method to trigger the Total Value Question UI
     private void TriggerTotalValueQuestion()
     {
+        Debug.Log("Triggering TotalValueQuestion UI");
+
         if (totalValueQuestion != null)
         {
             totalValueQuestion.ShowQuestion();  // Show the question UI
         }
+        else
+        {
+            Debug.LogError("TotalValueQuestion reference is missing!");
+        }
     }
+
 }
