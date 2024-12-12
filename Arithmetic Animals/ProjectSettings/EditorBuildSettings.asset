@@ -12,9 +12,21 @@ EditorBuildSettings:
     path: Assets/Scenes/Level 1.unity
     guid: 60d02bd80ab8d1742b65e81576ce0465
   - enabled: 1
+    path: Assets/Scenes/Level 2.unity
+    guid: 1bca5bfbb1731f9468610cc514a67c66
+  - enabled: 1
     path: Assets/Scenes/Level 3.unity
-    guid: 318c4211ddf078a4097a2489f37722ed
+    guid: ce168d7daa809c44bb4f2b1ebc44cd3a
   - enabled: 1
     path: Assets/Scenes/Level 4.unity
+    guid: 69d4f08915c4cd34c8e846a79a3d3b4e
+  - enabled: 1
+    path: Assets/Scenes/Level 5.unity
+    guid: 40b2156d412111b4698e357889cad0c4
+  - enabled: 1
+    path: Assets/Scenes/Win Defeat.unity
+    guid: 318c4211ddf078a4097a2489f37722ed
+  - enabled: 1
+    path: Assets/Scenes/Logo Screen.unity
     guid: 4ed95566f7eb5e542927283060a1a213
   m_configObjects: {}

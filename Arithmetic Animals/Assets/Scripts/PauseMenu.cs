@@ -42,7 +42,7 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0;  // Stop time (pause the game)
         pauseMenuPanel.SetActive(true);  // Show the pause menu
         isPaused = true;
-       
+
 
         if (countdownManager != null)
         {

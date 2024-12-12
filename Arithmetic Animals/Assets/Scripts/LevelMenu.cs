@@ -1,12 +1,44 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LevelMenu : MonoBehaviour
 {
+
+    public Button[] buttons;
     [SerializeField] private AsyncLoad asyncLoad; // Reference to the AsyncLoad script
+    public GameObject levelButtons;
+
+    private void Awake()
+    {
+
+        ButtonsToArray();
+
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", +1);
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            buttons[i].interactable = false;
+        }
+        for (int i = 0; i < unlockedLevel; i++)
+        {
+            buttons[i].interactable = true;
+        }
+
+    }
 
     public void OpenLevel(int levelId)
     {
-        string levelName = "Level " + levelId;
-        asyncLoad.loadLevelBtn(levelName); // Delegate the loading to the AsyncLoad script
+        string levelName = "Level " + levelId; // Generate level name dynamically
+        asyncLoad.LoadLevelBtn(levelName);
+    }
+
+    void ButtonsToArray()
+    {
+        int childCount = levelButtons.transform.childCount;
+        buttons = new Button[childCount];
+        for (int i = 0; i < childCount; i++)
+        {
+            buttons[i] = levelButtons.transform.GetChild(i).gameObject.GetComponent<Button>();
+        }
     }
 }

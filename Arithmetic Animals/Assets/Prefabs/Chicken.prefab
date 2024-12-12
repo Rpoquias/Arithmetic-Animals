@@ -102,9 +102,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalValue: 1
   movementType: 0
+  movementDirection: 0
   movementSpeed: 2
-  isWalking: 0
-  movementDirection: 1
+  isRare: 0
+  rareQuestion: 
+  rareAnswer: 0
+  isMovementAllowed: 1
 --- !u!61 &1330320049414403605
 BoxCollider2D:
   m_ObjectHideFlags: 0
