@@ -28,25 +28,7 @@
     {
         isPaused = true; // Add a flag if necessary
     }
-    public void PauseGame()
-    {
-        if (gameManager != null && gameManager.rareQuestionPanel.activeSelf)
-        {
-            // Don't allow pausing while a rare question is active
-            Debug.Log("Cannot pause while answering a rare question.");
-            return;
-        }
-
-        Time.timeScale = 0;
-        pauseMenuPanel.SetActive(true);
-        isPaused = true;
-
-        if (countdownManager != null)
-        {
-            countdownManager.PauseCountdown();
-        }
-    }
-
+    
     // Toggle the pause menu on and off
     public void TogglePauseMenu()
             {
