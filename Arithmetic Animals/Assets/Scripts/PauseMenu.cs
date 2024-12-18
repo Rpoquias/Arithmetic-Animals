@@ -28,7 +28,7 @@
     {
         isPaused = true; // Add a flag if necessary
     }
-    
+            
     // Toggle the pause menu on and off
     public void TogglePauseMenu()
             {
