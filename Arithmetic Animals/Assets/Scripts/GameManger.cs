@@ -6,86 +6,103 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    // Singleton Pattern
     public static GameManager Instance { get; private set; }
-    public CountDownManager countdownManager; // Reference to the countdown manager
+    public static int CurrentSceneTotal { get; private set; }
+
+    private void Awake()
+    {
+        // Ensure only one instance of the GameManager exists in the scene.
+        if (Instance == null)
+        {
+            Instance = this;
+            // Don't use DontDestroyOnLoad anymore.
+        }
+        else
+        {
+            Destroy(gameObject);  // Destroy the duplicate instance.
+        }
+    }
 
 
+    // Managers
+    public CountDownManager countdownManager;
 
+    // Animal Total Calculation
     private int initialTotal = 0;
     private int persistentTotal = 0;
 
-    // Total value UI
+    // Question UI (Time's Up Panel)
+    [Header("Question Panel")]
     public TMP_Text questionText;
     public TMP_InputField answerInput;
     public Button submitButton;
     public GameObject questionPanel;
-
     private int correctAnswer;
 
     // Rare Animal UI
+    [Header("Rare Animal Panel")]
     public TMP_Text rareQuestionText;
     public TMP_InputField rareAnswerInput;
     public Button rareSubmitButton;
     public GameObject rareQuestionPanel;
-
     private int rareCorrectAnswer;
 
-
-
-    private void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    // Win and Defeat Panels
+    [Header("Win and Defeat Panels")]
+    public GameObject winPanel;
+    public GameObject defeatPanel;
+    public Button homeButtonWin;
+    public Button restartButtonWin;
+    public Button nextLevelButtonWin;
+    public Button homeButtonDefeat;
+    public Button restartButtonDefeat;
 
     private void Start()
     {
-        // Calculate the initial total of all animals in the scene at the start
+        // Ensure countdownManager and UI elements are assigned
+        if (countdownManager == null)
+        {
+            countdownManager = FindObjectOfType<CountDownManager>();
+        }
+
+        if (questionPanel == null)
+        {
+            questionPanel = GameObject.Find("QuestionPanel"); // Adjust to the name of the object in your scene
+        }
+
+        // Initialize Animal Total
         CalculateInitialTotal();
 
+        // Add Listeners for Input Submission
         submitButton.onClick.AddListener(SubmitAnswer);
         rareSubmitButton.onClick.AddListener(SubmitRareAnimalAnswer);
 
-        // Initially hide the panels
+        // Hide Panels Initially
         questionPanel.SetActive(false);
         rareQuestionPanel.SetActive(false);
+        winPanel.SetActive(false);
+        defeatPanel.SetActive(false);
     }
 
+
+    // ----------------------
+    // Rare Animal Mechanics
+    // ----------------------
     public void ShowRareAnimalQuestion(string question, int correctAnswer)
     {
         Debug.Log("Found Rare Animal! Solve the Problem!");
+        PauseGame();
 
-        // Pause the countdown
-        if (countdownManager != null)
-        {
-            countdownManager.PauseCountdown();
-        }
-
-        // Freeze the game
-        Time.timeScale = 0;
-
-        // Show the rare animal question panel
         rareQuestionPanel.SetActive(true);
-
-        // Set the question text and correct answer
         rareQuestionText.text = question;
         rareCorrectAnswer = correctAnswer;
-
-        // Clear the input field
         rareAnswerInput.text = "";
     }
 
-
     private void SubmitRareAnimalAnswer()
     {
-        int playerAnswer;
-        if (int.TryParse(rareAnswerInput.text, out playerAnswer))
+        if (int.TryParse(rareAnswerInput.text, out int playerAnswer))
         {
             if (playerAnswer == rareCorrectAnswer)
             {
@@ -97,25 +114,118 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Incorrect rare animal answer.");
                 // Penalize the player
             }
-
-            // Hide the rare animal question panel
             rareQuestionPanel.SetActive(false);
-
-            // Resume countdown and unfreeze game
-            if (countdownManager != null)
-            {
-                countdownManager.ResumeCountdown();
-            }
-            Time.timeScale = 1; // Resume game time
+            ResumeGame();
         }
         else
         {
             Debug.Log("Invalid input! Please enter a number.");
         }
     }
-   
 
+    // ----------------------
+    // Game Question Mechanics
+    // ----------------------
+    public void ShowQuestion()
+    {
+        questionPanel.SetActive(true);
+        correctAnswer = initialTotal;
+        questionText.text = "Time's Up!!!\r\nHow many values are there\r\nbased on the animals\r\non the screen?";
+        answerInput.text = "";
+    }
 
+    private void SubmitAnswer()
+    {
+        if (int.TryParse(answerInput.text, out int playerAnswer))
+        {
+            if (playerAnswer == correctAnswer)
+            {
+                Debug.Log("Correct Answer! You Win!");
+                ShowWinPanel();
+            }
+            else
+            {
+                Debug.Log("Incorrect Answer. You Lose!");
+                ShowDefeatPanel();
+            }
+            questionPanel.SetActive(false);
+        }
+        else
+        {
+            Debug.Log("Invalid input! Please enter a number.");
+        }
+    }
+
+    // ----------------------
+    // Win and Defeat Mechanics
+    // ----------------------
+    private void ShowWinPanel()
+    {
+        winPanel.SetActive(true);
+        SetupWinButtons();
+    }
+
+    private void ShowDefeatPanel()
+    {
+        defeatPanel.SetActive(true);
+        SetupDefeatButtons();
+    }
+
+    private void SetupWinButtons()
+    {
+        homeButtonWin.onClick.AddListener(() => LoadScene("Main Menu"));
+        restartButtonWin.onClick.AddListener(() => RestartLevel());
+        nextLevelButtonWin.onClick.AddListener(() => LoadNextLevel());
+    }
+
+    private void SetupDefeatButtons()
+    {
+        homeButtonDefeat.onClick.AddListener(() => LoadScene("Main Menu"));
+        restartButtonDefeat.onClick.AddListener(() => RestartLevel());
+    }
+
+    // ----------------------
+    // Level and Scene Management
+    // ----------------------
+    private void LoadScene(string sceneName)
+    {
+        Time.timeScale = 1; // Ensure game time is running
+        SceneManager.LoadScene(sceneName);
+    }
+
+    private void RestartLevel()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void LoadNextLevel()
+    {
+        Time.timeScale = 1;
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
+
+        if (currentLevelIndex + 1 > unlockedLevel)
+        {
+            PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
+            PlayerPrefs.Save();
+        }
+        SceneManager.LoadScene(currentLevelIndex + 1);
+    }
+
+    // ----------------------
+    // Game Management Utilities
+    // ----------------------
+
+    public void AddToTotal(int value)
+    {
+        CurrentSceneTotal += value;
+        Debug.Log($"Current scene total updated: {CurrentSceneTotal}");
+    }
+    public void ResetSceneTotal()
+    {
+        CurrentSceneTotal = 0; // Reset value when transitioning to new scene
+    }
     private void CalculateInitialTotal()
     {
         initialTotal = 0;
@@ -126,72 +236,17 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Initial animal total calculated: {initialTotal}");
     }
 
-    public int GetInitialTotal()
+    private void PauseGame()
     {
-        return initialTotal;
+        if (countdownManager != null)
+            countdownManager.PauseCountdown();
+        Time.timeScale = 0;
     }
 
-    public void ShowQuestion()
+    private void ResumeGame()
     {
-
-        // Show the question panel
-        questionPanel.SetActive(true);
-
-        // Set the correct answer as the initial total value of animals
-        correctAnswer = initialTotal;
-
-        // Set the question text
-        questionText.text = "Time's Up!!!\r\nHow many values are there\r\nbased on the animals\r\non the screen?";
-
-        // Clear the input field
-        answerInput.text = "";
-    }
-
-    private void SubmitAnswer()
-    {
-
-        int playerAnswer;
-        if (int.TryParse(answerInput.text, out playerAnswer))
-        {
-            if (playerAnswer == correctAnswer)
-            {
-                Debug.Log("Correct Answer! You Win!");
-                PlayerPrefs.SetString("GameResult", "Win");
-            }
-            else
-            {
-                Debug.Log("Incorrect Answer. You Lose!");
-                PlayerPrefs.SetString("GameResult", "Defeat");
-            }
-
-            questionPanel.SetActive(false);
-            StartCoroutine(ShowFeedbackAndLoadScene());
-        }
-        else
-        {
-            Debug.Log("Invalid input! Please enter a number.");
-        }
-    }
-
-    private IEnumerator ShowFeedbackAndLoadScene()
-    {
-        yield return new WaitForSeconds(0.1f);
-        SceneManager.LoadScene("Win Defeat");
-    }
-
-    public int CalculateTotal()
-    {
-        return initialTotal + persistentTotal;
-    }
-
-    public void AddToTotal(int value)
-    {
-        persistentTotal += value;
-        Debug.Log($"Persistent total updated: {persistentTotal}");
-    }
-
-    private void Update()
-    {
-        Debug.Log($"Initial Total: {initialTotal}, Persistent Total (destroyed): {persistentTotal}");
+        if (countdownManager != null)
+            countdownManager.ResumeCountdown();
+        Time.timeScale = 1;
     }
 }

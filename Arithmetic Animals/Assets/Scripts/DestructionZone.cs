@@ -11,12 +11,14 @@ public class DestructionZone : MonoBehaviour
             Animal animal = collision.GetComponent<Animal>();
             if (animal != null)
             {
+                // Add the animal's value to a persistent total in GameManager
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.AddToTotal(animal.animalValue);
-                    Debug.Log($"Animal {animal.gameObject.name} added its value to persistent total: {animal.animalValue}");
+                    Debug.Log($"Animal {animal.gameObject.name} value {animal.animalValue} added to persistent total.");
                 }
 
+                // Destroy the animal GameObject
                 Destroy(collision.gameObject);
                 Debug.Log($"{collision.gameObject.name} destroyed.");
             }
