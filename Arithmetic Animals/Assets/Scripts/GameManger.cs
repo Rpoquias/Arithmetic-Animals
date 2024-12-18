@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public CountDownManager countdownManager; // Reference to the countdown manager
 
-   
+
+
     private int initialTotal = 0;
     private int persistentTotal = 0;
 
@@ -28,8 +30,7 @@ public class GameManager : MonoBehaviour
 
     private int rareCorrectAnswer;
 
-    // Main UI Canvas Group (the UI you want to block when the rare question UI is shown)
-    public CanvasGroup mainUICanvasGroup;  // Reference to the Canvas Group of the main UI
+
 
     private void Awake()
     {
@@ -58,14 +59,16 @@ public class GameManager : MonoBehaviour
 
     public void ShowRareAnimalQuestion(string question, int correctAnswer)
     {
-        Debug.Log("Found Rare Animal! \r\nSolve the Problem!");
+        Debug.Log("Found Rare Animal! Solve the Problem!");
+
+        // Pause the countdown
+        if (countdownManager != null)
+        {
+            countdownManager.PauseCountdown();
+        }
 
         // Freeze the game
         Time.timeScale = 0;
-
-        // Disable interactions with the main UI (e.g., pause button)
-        mainUICanvasGroup.interactable = false;
-        mainUICanvasGroup.blocksRaycasts = false;
 
         // Show the rare animal question panel
         rareQuestionPanel.SetActive(true);
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour
         rareAnswerInput.text = "";
     }
 
+
     private void SubmitRareAnimalAnswer()
     {
         int playerAnswer;
@@ -86,29 +90,31 @@ public class GameManager : MonoBehaviour
             if (playerAnswer == rareCorrectAnswer)
             {
                 Debug.Log("Correct rare animal answer!");
-                // Reward the player or handle success logic
+                // Reward the player
             }
             else
             {
                 Debug.Log("Incorrect rare animal answer.");
-                // Penalize the player or handle failure logic
+                // Penalize the player
             }
 
-            // Hide the rare animal question panel after submission
+            // Hide the rare animal question panel
             rareQuestionPanel.SetActive(false);
 
-            // Unfreeze the game (resume time)
-            Time.timeScale = 1;
-
-            // Enable interactions with the main UI again
-            mainUICanvasGroup.interactable = true;
-            mainUICanvasGroup.blocksRaycasts = true;
+            // Resume countdown and unfreeze game
+            if (countdownManager != null)
+            {
+                countdownManager.ResumeCountdown();
+            }
+            Time.timeScale = 1; // Resume game time
         }
         else
         {
             Debug.Log("Invalid input! Please enter a number.");
         }
     }
+   
+
 
     private void CalculateInitialTotal()
     {
@@ -127,7 +133,6 @@ public class GameManager : MonoBehaviour
 
     public void ShowQuestion()
     {
-        Debug.Log("Triggering Total Value Question UI");
 
         // Show the question panel
         questionPanel.SetActive(true);
@@ -144,6 +149,7 @@ public class GameManager : MonoBehaviour
 
     private void SubmitAnswer()
     {
+
         int playerAnswer;
         if (int.TryParse(answerInput.text, out playerAnswer))
         {

@@ -15,10 +15,12 @@ public class EndGameManager : MonoBehaviour
         if (gameResult == "Win")
         {
             ShowWin();
+           
         }
         else
         {
             ShowDefeat();
+           
         }
     }
 
@@ -45,25 +47,37 @@ public class EndGameManager : MonoBehaviour
     // Restart the current level
     public void RestartLevel()
     {
-        string currentLevelName = SceneManager.GetActiveScene().name; // Get the current level name
-        SceneManager.LoadScene(currentLevelName); // Reload the current scene
+
+        string currentLevelName = PlayerPrefs.GetString("CurrentLevel", SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(currentLevelName); // Reload the saved level
     }
 
     // Go to the next level
     // Go to the next level
     public void LoadNextLevel()
     {
-        // Unlock the next level
         int currentLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
-        PlayerPrefs.SetInt("UnlockedLevel", currentLevel + 1);
-        PlayerPrefs.SetInt("FocusLevel", currentLevel + 1); // Save the next level to focus
-        PlayerPrefs.SetInt("OpenLevelsPanel", 1); // Flag to open the levels panel
+        int nextLevel = currentLevel + 1;
+
+        // Unlock the next level
+        PlayerPrefs.SetInt("UnlockedLevel", nextLevel);
+        PlayerPrefs.SetInt("FocusLevel", nextLevel); // Save the next level to focus
         PlayerPrefs.Save();
 
-        // Load the Main Menu Scene
-        SceneManager.LoadScene("MainMenu"); // Replace with the actual scene name
-    }
+        // Generate the next level scene name dynamically
+        string nextLevelName = "Level " + nextLevel;
 
+        // Check if the next level exists in Build Settings
+        if (Application.CanStreamedLevelBeLoaded(nextLevelName))
+        {
+            SceneManager.LoadScene(nextLevelName);
+        }
+        else
+        {
+            Debug.LogWarning($"Level '{nextLevelName}' does not exist. Returning to Main Menu.");
+            SceneManager.LoadScene("MainMenu"); // Fallback to the main menu
+        }
+    }
 
 }
 

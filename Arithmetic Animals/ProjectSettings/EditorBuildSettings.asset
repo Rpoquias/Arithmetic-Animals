@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Logo Screen.unity
+    guid: 4ed95566f7eb5e542927283060a1a213
+  - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -26,7 +29,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Win Defeat.unity
     guid: 318c4211ddf078a4097a2489f37722ed
-  - enabled: 1
-    path: Assets/Scenes/Logo Screen.unity
-    guid: 4ed95566f7eb5e542927283060a1a213
   m_configObjects: {}
