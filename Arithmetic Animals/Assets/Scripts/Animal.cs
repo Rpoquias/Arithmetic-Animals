@@ -10,6 +10,12 @@ public class Animal : MonoBehaviour
     public MovementDirection movementDirection = MovementDirection.Right;
     public float movementSpeed = 2f;
 
+    public bool isRare = false; // Flag to identify if this is a rare animal
+    public string rareQuestion; // The question for this rare animal
+    public int rareAnswer;      // The correct answer for this rare animal
+    public bool isMovementAllowed = true;
+
+
     // Component References
     private Camera _cam;
     private SpriteRenderer sr;
@@ -87,6 +93,8 @@ public class Animal : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (!isMovementAllowed) return;  // Skip movement if it's not allowed
+
         switch (movementType)
         {
             case MovementType.Static:
@@ -99,8 +107,7 @@ public class Animal : MonoBehaviour
                 MovePastScreen();
                 break;
         }
-    }
-
+    }   
     private void PlayIdleAnimation()
     {
         if (animator != null)
@@ -151,6 +158,16 @@ public class Animal : MonoBehaviour
     #endregion
 
     #region Utility Methods
+
+    private void OnMouseDown()
+    {
+        // Detects clicks or touches on this GameObject
+        if (isRare)
+        {
+            Debug.Log("Rare animal touched!");
+            GameManager.Instance.ShowRareAnimalQuestion(rareQuestion, rareAnswer);
+        }
+    }
 
     private void AdjustAnimalSizeBasedOnScreen()
     {

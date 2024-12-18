@@ -1,75 +1,158 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class CountDownManager : MonoBehaviour
 {
-    public TMP_Text countdownText;  // Reference to a TextMeshProUGUI component for the countdown text
-    public float countdownTime = 10f;  // The duration of the countdown
+    public bool isPreGameCountdownActive = false;
+    public TMP_Text preGameCountdownText;  // Reference to the "Get Ready" text
+    public TMP_Text countdownText;  // Reference to the gameplay countdown text
+    public GameObject preGameUI;  // Parent object that contains both the "Get Ready" text and gameplay countdown text
 
-    private float currentTime;
-    private bool countdownActive = false;
+    public float preGameCountdownTime = 3f;  // Time for the "Get Ready" countdown (3 seconds)
+    public float gameCountdownTime = 10f;  // Time for the gameplay countdown
 
-    public TotalValueQuestion totalValueQuestion;  // Reference to the TotalValueQuestion script
+    private float currentTime;  // Current time for countdown
+    private bool countdownActive = false;  // Flag to track if countdown is active
+    private bool isPreGameCountdown = true;  // Flag to track if it's pre-game countdown
+    private bool isGameCountdown = false;  // Flag to track if it's gameplay countdown
+
+    // Reference to the GameManager (which handles the Total Value Question)
+    public GameManager gameManager;
 
     void Start()
     {
-        // Initialize currentTime with countdownTime
-        currentTime = countdownTime;
-        UpdateCountdownText();
-
-        // Optionally start the countdown automatically
-        StartCountdown(); // Comment this out if you want to start it manually
+        // Ensure that Time.timeScale is set to 1 when starting
+        Time.timeScale = 1;
+        // Start the "Get Ready" countdown
+        StartPreGameCountdown();
     }
 
+
     // Update is called once per frame
+
     void Update()
     {
         if (countdownActive)
         {
-            currentTime -= Time.deltaTime;  // Decrease the time
+            // Debug log to track countdown timing
+            Debug.Log("Current Time: " + currentTime);
+
+            if (countdownActive)
+            {
+                // Decrease the current time using unscaled delta time
+                currentTime -= Time.unscaledDeltaTime;
+
+                if (currentTime <= 0)
+                {
+                    currentTime = 0;
+                    countdownActive = false;
+
+                    // Continue with the rest of the countdown logic
+                }
+            }
 
             if (currentTime <= 0)  // Check if countdown has finished
             {
                 currentTime = 0;
                 countdownActive = false;  // Stop the countdown
-                TriggerTotalValueQuestion();  // Trigger the Total Value Question
+
+                if (isPreGameCountdown)  // If it's the "Get Ready" countdown
+                {
+                    isPreGameCountdown = false;  // Switch to gameplay countdown
+
+                    // Hide the PreGame UI
+                    preGameUI.SetActive(false);
+
+                    // Start the gameplay countdown
+                    StartGameCountdown();
+
+                    Time.timeScale = 1;  // Ensure time is running normally after pre-game
+                }
+                else if (isGameCountdown)  // If it's the gameplay countdown
+                {
+                    TriggerTotalValueQuestion();  // Trigger the Total Value Question UI
+                }
             }
 
-            UpdateCountdownText();  // Update the displayed countdown text
+            // Update the countdown text based on the current countdown type
+            if (isPreGameCountdown)
+            {
+                UpdatePreGameCountdownText();
+            }
+            else if (isGameCountdown)
+            {
+                UpdateGameCountdownText();
+            }
+        }
+    }
+    // Updates the pregame countdown display based on the current time
+    private void UpdatePreGameCountdownText()
+    {
+        int seconds = Mathf.FloorToInt(currentTime);
+        preGameCountdownText.text = string.Format("Get Ready: {0:00}(s)", seconds);
+    }
+
+    // Updates the gameplay countdown display based on the current time
+    private void UpdateGameCountdownText()
+    {
+        int seconds = Mathf.FloorToInt(currentTime);
+        countdownText.text = string.Format("{0:00}(s) remaining", seconds);  // Simple seconds countdown format
+    }
+
+    private void SetAnimalsMovement(bool isAllowed)
+    {
+        Animal[] allAnimals = FindObjectsOfType<Animal>();
+        foreach (var animal in allAnimals)
+        {
+            animal.isMovementAllowed = isAllowed;
         }
     }
 
-
-    // Updates the countdown display in the format MM:SS
-    private void UpdateCountdownText()
+    // Public method to start the pre-game countdown
+    public void StartPreGameCountdown()
     {
-        int minutes = Mathf.FloorToInt(currentTime / 60);
-        int seconds = Mathf.FloorToInt(currentTime % 60);
-        countdownText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        // Debug log to track countdown start time
+        Debug.Log("Starting PreGame Countdown: " + preGameCountdownTime);
+
+        preGameUI.SetActive(true);  // Show PreGame UI
+        countdownText.gameObject.SetActive(true);  // Show countdown text
+        currentTime = preGameCountdownTime;  // Set countdown time
+        countdownActive = true;  // Begin countdown
+        isPreGameCountdown = true;  // Mark this as the pregame countdown
+
+        // Disable animal movement during countdown
+        SetAnimalsMovement(false);
     }
 
-    // Public method to start the countdown
-    public void StartCountdown()
+
+    // Public method to start the gameplay countdown
+    public void StartGameCountdown()
     {
-        currentTime = countdownTime;  // Reset current time to countdownTime
-        countdownActive = true;  // Set the countdown active
+        SetAnimalsMovement(true);
+        countdownText.gameObject.SetActive(true);  // Activate gameplay countdown text
+        currentTime = gameCountdownTime;  // Set countdown time to gameplay countdown time
+        countdownActive = true;  // Begin gameplay countdown
+        isGameCountdown = true;  // Mark this as the gameplay countdown
     }
 
-    // Method to trigger the Total Value Question UI
+    // Function to trigger the total value question (after the game countdown ends)
     private void TriggerTotalValueQuestion()
     {
-        Debug.Log("Triggering TotalValueQuestion UI");
-
-        if (totalValueQuestion != null)
-        {
-            totalValueQuestion.ShowQuestion();  // Show the question UI
-        }
-        else
-        {
-            Debug.LogError("TotalValueQuestion reference is missing!");
-        }
+        // Trigger the Total Value Question logic here
+        // For example, enable the UI for the total value question and allow user input
+        gameManager.ShowQuestion();
     }
 
+    // Pause the countdown
+    public void PauseCountdown()
+    {
+        countdownActive = false;  // Stops the countdown
+    }
+
+    // Resume the countdown
+    public void ResumeCountdown()
+    {
+        countdownActive = true;  // Resumes the countdown
+    }
 }
