@@ -346,7 +346,6 @@ GameObject:
   - component: {fileID: 61533942}
   - component: {fileID: 61533941}
   - component: {fileID: 61533940}
-  - component: {fileID: 61533939}
   m_Layer: 5
   m_Name: UI Panels
   m_TagString: Untagged
@@ -354,34 +353,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &61533939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 61533938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe9df68861dfd254abaf7eb844dd0448, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  countdownManager: {fileID: 0}
-  questionText: {fileID: 1096134399}
-  answerInput: {fileID: 1829982983}
-  submitButton: {fileID: 259435363}
-  questionPanel: {fileID: 1950265602}
-  rareQuestionText: {fileID: 1109400289}
-  rareAnswerInput: {fileID: 1743035141}
-  rareSubmitButton: {fileID: 1314718689}
-  rareQuestionPanel: {fileID: 1631415794}
-  winPanel: {fileID: 0}
-  defeatPanel: {fileID: 0}
-  homeButtonWin: {fileID: 0}
-  restartButtonWin: {fileID: 0}
-  nextLevelButtonWin: {fileID: 0}
-  homeButtonDefeat: {fileID: 0}
-  restartButtonDefeat: {fileID: 0}
 --- !u!114 &61533940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3489,7 +3460,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 375789067}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -5679,7 +5650,6 @@ GameObject:
   - component: {fileID: 1534574057}
   - component: {fileID: 1534574056}
   - component: {fileID: 1534574055}
-  - component: {fileID: 1534574054}
   m_Layer: 5
   m_Name: CountdownsUI
   m_TagString: Untagged
@@ -5687,25 +5657,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1534574054
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1534574053}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22b19258ced536544ac45cde8e1fa1d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isPreGameCountdownActive: 0
-  preGameCountdownText: {fileID: 1087369145}
-  countdownText: {fileID: 506820500}
-  preGameUI: {fileID: 366417990}
-  preGameCountdownTime: 5
-  gameCountdownTime: 20
-  gameManager: {fileID: 61533939}
 --- !u!114 &1534574055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7086,6 +7037,7 @@ GameObject:
   - component: {fileID: 1874199977}
   - component: {fileID: 1874199976}
   - component: {fileID: 1874199975}
+  - component: {fileID: 1874199978}
   m_Layer: 0
   m_Name: THE MANAGER
   m_TagString: Untagged
@@ -7111,7 +7063,7 @@ MonoBehaviour:
   preGameUI: {fileID: 366417990}
   preGameCountdownTime: 3
   gameCountdownTime: 10
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 1874199978}
 --- !u!114 &1874199976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7130,7 +7082,7 @@ MonoBehaviour:
   backToHomeButton: {fileID: 1765007345}
   pauseButton: {fileID: 864901437}
   countdownManager: {fileID: 1874199975}
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 1874199978}
 --- !u!4 &1874199977
 Transform:
   m_ObjectHideFlags: 0
@@ -7146,6 +7098,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1874199978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1874199973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe9df68861dfd254abaf7eb844dd0448, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  countdownManager: {fileID: 1874199975}
+  questionText: {fileID: 1096134399}
+  answerInput: {fileID: 1829982983}
+  submitButton: {fileID: 259435363}
+  questionPanel: {fileID: 1950265602}
+  rareQuestionText: {fileID: 1109400289}
+  rareAnswerInput: {fileID: 1743035141}
+  rareSubmitButton: {fileID: 1314718689}
+  rareQuestionPanel: {fileID: 1631415794}
+  winPanel: {fileID: 856658165}
+  defeatPanel: {fileID: 885830659}
+  homeButtonWin: {fileID: 794281818}
+  restartButtonWin: {fileID: 1880322016}
+  nextLevelButtonWin: {fileID: 195381580}
+  homeButtonDefeat: {fileID: 1044339616}
+  restartButtonDefeat: {fileID: 2040469432}
 --- !u!1 &1880322012
 GameObject:
   m_ObjectHideFlags: 0

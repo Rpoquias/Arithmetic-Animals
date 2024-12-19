@@ -8,22 +8,19 @@ public class GameManager : MonoBehaviour
 {
     // Singleton Pattern
     public static GameManager Instance { get; private set; }
-    public static int CurrentSceneTotal { get; private set; }
 
     private void Awake()
     {
-        // Ensure only one instance of the GameManager exists in the scene.
         if (Instance == null)
         {
             Instance = this;
-            // Don't use DontDestroyOnLoad anymore.
         }
         else
         {
-            Destroy(gameObject);  // Destroy the duplicate instance.
+            Destroy(gameObject); // Destroy duplicate
         }
-    }
 
+    }
 
     // Managers
     public CountDownManager countdownManager;
@@ -140,21 +137,33 @@ public class GameManager : MonoBehaviour
         {
             if (playerAnswer == correctAnswer)
             {
-                Debug.Log("Correct Answer! You Win!");
+                // Unlock the next level (adjust for index offset)
+                int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+                int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1); // Default to level 1 being unlocked (index 2)
                 ShowWinPanel();
+
+                if (currentLevelIndex + 1 > unlockedLevel)
+                {
+                    PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
+                    PlayerPrefs.Save();
+                }
             }
             else
             {
                 Debug.Log("Incorrect Answer. You Lose!");
                 ShowDefeatPanel();
             }
+
             questionPanel.SetActive(false);
         }
         else
         {
+            // Handle this outside the SubmitAnswer if needed, as you stated you already have panels for this.
             Debug.Log("Invalid input! Please enter a number.");
         }
     }
+
+
 
     // ----------------------
     // Win and Defeat Mechanics
@@ -163,7 +172,15 @@ public class GameManager : MonoBehaviour
     {
         winPanel.SetActive(true);
         SetupWinButtons();
+
+        // Refresh level buttons after winning
+        LevelMenu levelMenu = FindObjectOfType<LevelMenu>();
+        if (levelMenu != null)
+        {
+            levelMenu.RefreshLevelButtons();
+        }
     }
+
 
     private void ShowDefeatPanel()
     {
@@ -217,14 +234,10 @@ public class GameManager : MonoBehaviour
     // Game Management Utilities
     // ----------------------
 
-    public void AddToTotal(int value)
+    public void AddToPersistentTotal(int value)
     {
-        CurrentSceneTotal += value;
-        Debug.Log($"Current scene total updated: {CurrentSceneTotal}");
-    }
-    public void ResetSceneTotal()
-    {
-        CurrentSceneTotal = 0; // Reset value when transitioning to new scene
+        persistentTotal += value;
+        Debug.Log($"Persistent total updated: {persistentTotal}");
     }
     private void CalculateInitialTotal()
     {

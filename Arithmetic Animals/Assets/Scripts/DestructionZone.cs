@@ -14,7 +14,7 @@ public class DestructionZone : MonoBehaviour
                 // Add the animal's value to a persistent total in GameManager
                 if (GameManager.Instance != null)
                 {
-                    GameManager.Instance.AddToTotal(animal.animalValue);
+                    GameManager.Instance.AddToPersistentTotal(animal.animalValue);
                     Debug.Log($"Animal {animal.gameObject.name} value {animal.animalValue} added to persistent total.");
                 }
 

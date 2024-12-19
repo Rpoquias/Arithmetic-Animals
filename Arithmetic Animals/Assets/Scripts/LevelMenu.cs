@@ -15,31 +15,38 @@
             ButtonsToArray();
             RefreshLevelButtons(); // Update button states
         }
-        void Start()
+    void Start()
+    {
+        // Only set UnlockedLevel if it's not already set (to avoid overwriting)
+        if (!PlayerPrefs.HasKey("UnlockedLevel"))
         {
-            PlayerPrefs.SetInt("UnlockedLevel", 1); // Unlock the first level
+            PlayerPrefs.SetInt("UnlockedLevel", 1); // Set level 1 as unlocked (index 1)
             PlayerPrefs.Save();
-            RefreshLevelButtons();
         }
-  
-        public void CompleteLevel(int levelId)
+        RefreshLevelButtons(); // Update button states
+    }
+    public void CompleteLevel(int levelId)
+    {
+        PlayerPrefs.SetInt("Level" + levelId + "Completed", 1);
+        PlayerPrefs.Save();
+        RefreshLevelButtons(); // Update button states to reflect the completed level
+    }
+
+
+    public void RefreshLevelButtons()
+    {
+        int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1); // Default to Level 1 being unlocked (index 1)
+
+        for (int i = 0; i < buttons.Length; i++)
         {
-            PlayerPrefs.SetInt("Level" + levelId + "Completed", 1);
-            PlayerPrefs.Save();
-            RefreshLevelButtons();
+            // Buttons are based on index 1, so we check if the level index + 1 is <= unlocked level
+            buttons[i].interactable = (i + 1 <= unlockedLevel); // i + 1 to match the index in PlayerPrefs
         }
+    }
 
-        private void RefreshLevelButtons()
-        {
-            int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
 
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                buttons[i].interactable = (i < unlockedLevel); // Interact only up to the unlocked level
-            }
-        }
 
-        public void BackToMainMenu()
+    public void BackToMainMenu()
         {
             gameObject.SetActive(false); // Hide the level menu
             mainMenuCanvas.SetActive(true); // Show the main menu
