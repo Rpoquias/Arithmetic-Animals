@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
 {
     // Singleton Pattern
     public static GameManager Instance { get; private set; }
-
+    public PlayerProgress playerProgress; // Reference to PlayerProgress
     private void Awake()
     {
         if (Instance == null)
@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
         {
             questionPanel = GameObject.Find("QuestionPanel"); // Adjust to the name of the object in your scene
         }
+            
 
         // Initialize Animal Total
         CalculateInitialTotal();
