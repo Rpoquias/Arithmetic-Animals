@@ -80,6 +80,18 @@
             private void BackToHome()
             {
                 Time.timeScale = 1;  // Ensure the game is running
-                SceneManager.LoadScene("Main Menu");  // Load the main menu scene (replace with your actual main menu scene name)
+            GoToMainMenu();
             }
-        }
+           private void GoToMainMenu()
+          {
+        // Set the flag to hide the username panel in the Main Menu scene
+           PlayerPrefs.SetInt("HideUsernamePanel", 1);
+           PlayerPrefs.Save(); // Save the changes
+    
+        // Load the Main Menu scene
+         SceneManager.LoadScene("Main Menu");
+          }
+
+
+
+}

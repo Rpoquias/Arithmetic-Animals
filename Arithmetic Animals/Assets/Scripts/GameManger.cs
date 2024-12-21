@@ -8,7 +8,9 @@ public class GameManager : MonoBehaviour
 {
     // Singleton Pattern
     public static GameManager Instance { get; private set; }
-    public PlayerProgress playerProgress; // Reference to PlayerProgress
+
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -19,7 +21,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject); // Destroy duplicate
         }
-
     }
 
     // Managers
@@ -57,43 +58,43 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Ensure countdownManager and UI elements are assigned
+        // Set up button listeners
+        homeButtonWin.onClick.AddListener(() => GoToMainMenu());
+        homeButtonDefeat.onClick.AddListener(() => GoToMainMenu());
+
+        // Ensure countdownManager is assigned
         if (countdownManager == null)
         {
             countdownManager = FindObjectOfType<CountDownManager>();
+            if (countdownManager == null)
+            {
+                Debug.LogWarning("CountdownManager not found in the scene.");
+            }
         }
 
-        if (questionPanel == null)
-        {
-            questionPanel = GameObject.Find("QuestionPanel"); // Adjust to the name of the object in your scene
-        }
-            
-
-        // Initialize Animal Total
+        // Initialize animal total
         CalculateInitialTotal();
 
-        // Add Listeners for Input Submission
+        // Add listeners for submitting answers
         submitButton.onClick.AddListener(SubmitAnswer);
         rareSubmitButton.onClick.AddListener(SubmitRareAnimalAnswer);
 
-        // Hide Panels Initially
+        // Hide panels initially
         questionPanel.SetActive(false);
         rareQuestionPanel.SetActive(false);
         winPanel.SetActive(false);
         defeatPanel.SetActive(false);
     }
 
-
     // ----------------------
     // Rare Animal Mechanics
     // ----------------------
-    public void ShowRareAnimalQuestion(string question, int correctAnswer)
+    public void ShowRareAnimalQuestion(int correctAnswer)
     {
-        Debug.Log("Found Rare Animal! Solve the Problem!");
         PauseGame();
 
         rareQuestionPanel.SetActive(true);
-        rareQuestionText.text = question;
+        rareQuestionText.text = "Rare Animal Found!\r\nSolve The Arithmetic Problem!\r\n 1 + 2 + 1 = ?";
         rareCorrectAnswer = correctAnswer;
         rareAnswerInput.text = "";
     }
@@ -138,9 +139,9 @@ public class GameManager : MonoBehaviour
         {
             if (playerAnswer == correctAnswer)
             {
-                // Unlock the next level (adjust for index offset)
+                // Unlock the next level
                 int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
-                int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1); // Default to level 1 being unlocked (index 2)
+                int unlockedLevel = PlayerPrefs.GetInt("UnlockedLevel", 1);
                 ShowWinPanel();
 
                 if (currentLevelIndex + 1 > unlockedLevel)
@@ -148,23 +149,42 @@ public class GameManager : MonoBehaviour
                     PlayerPrefs.SetInt("UnlockedLevel", currentLevelIndex + 1);
                     PlayerPrefs.Save();
                 }
+
+                // Reward 3 stars for correct answer
+                PlayerProgress playerProgress = FindObjectOfType<PlayerProgress>();
+                if (playerProgress != null)
+                {
+                    playerProgress.AddStars(3);  // Add 3 stars to the player's progress
+                    PlayerDataManager.Instance.SaveGame();  // Save the game after updating stars
+                }
+
             }
             else
             {
-                Debug.Log("Incorrect Answer. You Lose!");
-                ShowDefeatPanel();
+                ShowDefeatPanel(); // Show defeat panel if the answer is incorrect
             }
 
-            questionPanel.SetActive(false);
+            questionPanel.SetActive(false); // Hide the question panel after the answer
         }
         else
         {
-            // Handle this outside the SubmitAnswer if needed, as you stated you already have panels for this.
-            Debug.Log("Invalid input! Please enter a number.");
+            Debug.Log("Invalid input! Please enter a number."); // Handle invalid input
         }
     }
 
 
+
+
+
+    // ----------------------
+    // Go to Main Menu
+    // ----------------------
+    private void GoToMainMenu()
+    {
+        PlayerPrefs.SetInt("HideUsernamePanel", 1);
+        PlayerPrefs.Save(); // Save changes
+        SceneManager.LoadScene("Main Menu");
+    }
 
     // ----------------------
     // Win and Defeat Mechanics
@@ -173,15 +193,7 @@ public class GameManager : MonoBehaviour
     {
         winPanel.SetActive(true);
         SetupWinButtons();
-
-        // Refresh level buttons after winning
-        LevelMenu levelMenu = FindObjectOfType<LevelMenu>();
-        if (levelMenu != null)
-        {
-            levelMenu.RefreshLevelButtons();
-        }
     }
-
 
     private void ShowDefeatPanel()
     {
@@ -240,6 +252,7 @@ public class GameManager : MonoBehaviour
         persistentTotal += value;
         Debug.Log($"Persistent total updated: {persistentTotal}");
     }
+
     private void CalculateInitialTotal()
     {
         initialTotal = 0;

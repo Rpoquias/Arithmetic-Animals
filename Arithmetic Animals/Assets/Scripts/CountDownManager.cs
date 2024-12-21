@@ -35,8 +35,7 @@ public class CountDownManager : MonoBehaviour
     {
         if (countdownActive)
         {
-            // Debug log to track countdown timing
-            Debug.Log("Current Time: " + currentTime);
+     
 
             if (countdownActive)
             {
@@ -113,7 +112,7 @@ public class CountDownManager : MonoBehaviour
     public void StartPreGameCountdown()
     {
         // Debug log to track countdown start time
-        Debug.Log("Starting PreGame Countdown: " + preGameCountdownTime);
+   
 
         preGameUI.SetActive(true);  // Show PreGame UI
         countdownText.gameObject.SetActive(true);  // Show countdown text

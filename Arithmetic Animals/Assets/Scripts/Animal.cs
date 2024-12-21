@@ -11,7 +11,7 @@ public class Animal : MonoBehaviour
     public float movementSpeed = 2f;
 
     public bool isRare = false; // Flag to identify if this is a rare animal
-    public string rareQuestion; // The question for this rare animal
+   
     public int rareAnswer;      // The correct answer for this rare animal
     public bool isMovementAllowed = true;
 
@@ -165,7 +165,7 @@ public class Animal : MonoBehaviour
         if (isRare)
         {
             Debug.Log("Rare animal touched!");
-            GameManager.Instance.ShowRareAnimalQuestion(rareQuestion, rareAnswer);
+            GameManager.Instance.ShowRareAnimalQuestion(rareAnswer);
         }
     }
 
